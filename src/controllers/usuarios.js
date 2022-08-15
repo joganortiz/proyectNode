@@ -18,13 +18,26 @@ const usuarios = class Usuarios {
      */
     getUsers = async (req, res = response) => {
 
-        const usuarios = await Usuario.find({delete: false}, 'nombre email role google status');
+        try {
+            const desde = Number(req.query.desde) | 0;
 
+            const usuarios = await Usuario
+                                    .find({delete: false}, 'nombre email role google status img')
+                                    .skip(desde)
+                                    .limit(5);
+                                    
 
-        return res.status(404).json({
-            ok: true,
-            usuarios
-        });
+            return res.status(200).json({
+                ok: true,
+                usuarios
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            })
+        }
     }
 
     /**
@@ -34,7 +47,7 @@ const usuarios = class Usuarios {
      * @returns json
      */
     getUser = (req, res) => {
-        return res.status(404).json({
+        return res.status(200).json({
             ok: true,
             msg: 'get usuario'
         });
@@ -72,7 +85,7 @@ const usuarios = class Usuarios {
 
             const _token = await generarJWT(usuario.id);
 
-            return res.status(404).json({
+            return res.status(200).json({
                 ok: true,
                 usuario,
                 _token
@@ -133,7 +146,7 @@ const usuarios = class Usuarios {
 
     /**
      * @author Jogan Ortiz Muñoz
-     * @description creara un usuario nuevo en la base de datos
+     * @description elimina un usuario de la base de datos
      * @date 2022-08-06
      * @returns json
      */

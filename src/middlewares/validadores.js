@@ -47,7 +47,6 @@ class Middlewares {
 
         try {
             const {uid} = jwt.verify(_token, process.env.JWT_SECRET); // validamos el token que recibimos
-            console.log(uid)
             if(uid === null || uid === undefined){
                 return res.status(401).json({
                     ok: false,
