@@ -54,8 +54,8 @@ class Medicos {
      * @returns json
      */
     setMedico = async (req, res = response) => {
-        const uid       = req.uid;
         try {
+            const uid       = req.uid;
             const existNombre = await Medico.findOne({nombre: req.body.nombre});
             if(existNombre){
                 return res.status(400).json({
@@ -89,10 +89,37 @@ class Medicos {
      * @returns json
      */
     updateMedico = async (req, res = response) => {
-        return res.status(200).json({
-            ok: true,
-            msg: 'llego al contralador funcion updateMedico'
-        });
+        try {
+            const uid       = req.uid;
+            const id        = req.params.id;
+
+            const existNombre = await Medico.findOne({nombre: req.body.nombre, _id: {$ne:id}});
+            if(existNombre){
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'El Medico ya esta registrado'
+                });
+            }
+
+
+            const cambiosMedico = {
+                ...req.body,
+                usuario: uid
+            }
+
+            const actualizado = await Medico.findByIdAndUpdate(id, cambiosMedico, { new: true});
+
+            return res.status(200).json({
+                ok: true,
+                actualizado
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            });
+        }
     }
 
     /**
@@ -102,10 +129,27 @@ class Medicos {
      * @returns json
      */
     deleteMedico = async (req, res = response) => {
-        return res.status(200).json({
-            ok: true,
-            msg: 'llego al contralador funcion deleteMedico'
-        });
+        try {
+            const id = req.params.id;
+
+            //Borrar dato de la tabla
+            //await Category.findByIdAndDelete(id);
+
+            //Actualizar dato de eliminar
+            await Medico.findByIdAndUpdate(id, { delete: true });
+
+            return res.status(200).json({
+                ok: true,
+                msg: 'Medico eliminado'
+            });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            });
+        }
     }
 }
 

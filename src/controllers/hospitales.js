@@ -87,10 +87,37 @@ class Hospitales {
      * @returns json
      */
      updateHospital = async (req, res = response) => {
-        return res.status(200).json({
-            ok: true,
-            msg: 'llego al contralador funcion updateHospital'
-        });
+        try {
+            const id    = req.params.id;
+            const uid   = req.uid;
+
+            const existNombre = await Hospital.findOne({nombre: req.body.nombre, _id: {$ne:id}});
+            if(existNombre){
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'El Hospital ya esta registrado'
+                });
+            }
+
+            const cambiosHospital = {
+                ...req.body,
+                usuario: uid
+            }
+
+            const actualizado = await Hospital.findByIdAndUpdate(id,cambiosHospital, { new: true});
+
+            return res.status(200).json({
+                ok: true,
+                actualizado
+            });
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            });
+        }
     }
 
     /**
@@ -100,10 +127,27 @@ class Hospitales {
      * @returns json
      */
     deleteHospital = async (req, res = response) => {
-        return res.status(200).json({
-            ok: true,
-            msg: 'llego al contralador funcion deleteHospital'
-        });
+        try {
+            const id = req.params.id;
+
+            //Borrar dato de la tabla
+            //await Category.findByIdAndDelete(id);
+
+            //Actualizar dato de eliminar
+            await Hospital.findByIdAndUpdate(id, { delete: true });
+
+            return res.status(200).json({
+                ok: true,
+                msg: 'Hospiotal eliminado'
+            });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            });
+        }
     }
 }
 

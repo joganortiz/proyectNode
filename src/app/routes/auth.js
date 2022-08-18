@@ -14,5 +14,10 @@ router.post('/login', [
     validar.validarCampos
 ], auth.login );
 
+router.post('/google', [
+    check('token', "El token es obligatorio").not().isEmpty(),
+    validar.validarCampos
+], auth.googleSingIn );
+
 
 module.exports = router;

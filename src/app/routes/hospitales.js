@@ -19,9 +19,18 @@ router.post('/', [
     validar.validarCampos
 ], hospitales.setHospital);
 
-router.put('/:id', [], hospitales.updateHospital);
+router.put('/:id', [
+    validar.validarJWT,
+    check('id', 'El ID debe ser válido').isMongoId(),
+    check('nombre', 'El nombre del hospital es necesario').not().isEmpty(),
+    validar.validarCampos
+], hospitales.updateHospital);
 
-router.delete('/:id', hospitales.deleteHospital);
+router.delete('/:id', [
+    validar.validarJWT,
+    check('id', 'El ID debe ser válido').isMongoId(),
+    validar.validarCampos
+], hospitales.deleteHospital);
 
 
 

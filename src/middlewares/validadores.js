@@ -18,8 +18,10 @@ class Middlewares {
     validarCampos = (req, res = response, next) => {
         
         const errores = validationResult(req);
+        
 
         if(!errores.isEmpty()){
+            console.log(errores.mapped())
             return res.status(400).json({
                 ok: false,
                 errores: errores.mapped()

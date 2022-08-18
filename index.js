@@ -8,6 +8,8 @@ const app = express();
 // Configurar CORS
 app.use(cors())
 
+app.use( express.static('public'));
+
 app.use('/api', require('./src/app/app'));
 
 app.listen(process.env.PORT, () => {

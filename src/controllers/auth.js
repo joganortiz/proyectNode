@@ -2,8 +2,7 @@ const { response } = require("express");
 const bcryptjs = require('bcryptjs');
 const Usuario = require("../models/usuario");
 const generarJWT = require("../libraries/jwt");
-
-
+const googleVerify = require("../libraries/google-verify");
 class Auth {
 
     login = async (req, res = response) => {
@@ -45,7 +44,48 @@ class Auth {
 
         } catch (error) {
             console.log(error);
+            res.status(500).json({
+                ok: false,
+                msg: "Error inesperado"
+            })
+        }
+    }
 
+    googleSingIn = async (req, res = response) => {
+        try {
+
+            const {name, email, picture} = await googleVerify(req.body.token);
+
+            const usuarioDB = await Usuario.findOne({email});
+            let usuario;
+
+            if(!usuarioDB){
+                usuario = new Usuario({
+                    nombre: name,
+                    email,
+                    password: '@@',
+                    img: picture,
+                    google: true
+
+                });
+            }else{
+                usuario = usuarioDB;
+                usuario.google = true;
+            }
+
+            // guardar usuario
+            await usuario.save();
+
+            // generar topken
+            const _token = await generarJWT(usuarioDB.id);
+
+            res.status(200).json({
+                ok: true,
+                name, email, picture,
+                _token
+            })
+        } catch (error) {
+            console.log(error);
             res.status(500).json({
                 ok: false,
                 msg: "Error inesperado"
