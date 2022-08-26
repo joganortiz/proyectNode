@@ -30,7 +30,8 @@ class Auth {
             if(!pasoTodoOk){
                 return res.status(404).json({
                     ok: false,
-                    msg: 'Constraseña y/o correo no son válido'
+                    msg: 'Correo electrónico y/o contraseña no son válido'
+
                 });
             }
 
@@ -79,9 +80,8 @@ class Auth {
             // generar topken
             const _token = await generarJWT(usuarioDB.id);
 
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
-                name, email, picture,
                 _token
             })
         } catch (error) {
@@ -90,6 +90,27 @@ class Auth {
                 ok: false,
                 msg: "Error inesperado"
             })
+        }
+    }
+
+    renewToken= async (req, res = response) => {
+        try {
+            const uid = req.uid;
+
+            // Generar el TOKEN - JWT
+            const token = await generarJWT( uid );
+        
+            // Obtener el usuario por UID
+            const usuario = await Usuario.findById( uid );
+        
+        
+            return res.json({
+                ok: true,
+               _token: token,
+               usuario
+            });
+        } catch (error) {
+            
         }
     }
 }

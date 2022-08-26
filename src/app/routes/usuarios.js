@@ -13,8 +13,9 @@ router.get('/', validar.validarJWT, Users.getUsers);
 
 router.get('/:id', validar.validarJWT, Users.getUser);
 
+router.get('/existemail/:id/:email', Users.getExistEmail);
+
 router.post('/', [
-    validar.validarJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('password', 'La contraseña es obligatorio').not().isEmpty(),
     check('email', 'El correo es obligatorio').isEmail(),
@@ -25,7 +26,7 @@ router.put('/:id', [
     validar.validarJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('email', 'El correo es obligatorio').isEmail(),
-    check('role', 'El rol es obligatorio').not().isEmpty(),
+    //check('role', 'El rol es obligatorio').not().isEmpty(),
     validar.validarCampos
 ],Users.updateUser);
 

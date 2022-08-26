@@ -18,8 +18,6 @@ router.put('/:tipo/:id',[
     validar.validarCampos
 ], upload.fileUpload);
 
-router.get('/:tipo/:img',[
-    validar.validarJWT
-], upload.getImg);
+router.get('/:tipo/:img', upload.getImg);
 
 module.exports = router;

@@ -19,5 +19,10 @@ router.post('/google', [
     validar.validarCampos
 ], auth.googleSingIn );
 
+router.get( '/renew',
+    validar.validarJWT,
+    auth.renewToken
+)
+
 
 module.exports = router;

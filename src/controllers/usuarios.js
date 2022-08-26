@@ -53,6 +53,26 @@ const usuarios = class Usuarios {
         });
     }
 
+    getExistEmail = async (req, res = response) => {
+        try {
+            const {id, email} = req.params;
+            
+            const existeEmail = await Usuario.findOne({email, _id: {$ne:id}});
+
+            if(existeEmail){
+                return res.json({ok: true});
+            }
+
+            return res.json({ ok: false});
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            })
+        }
+    }
+
     /**
      * @author Jogan Ortiz Muñoz
      * @description creara un usuario nuevo en la base de datos
@@ -96,7 +116,7 @@ const usuarios = class Usuarios {
             return res.status(500).json({
                 ok: false,
                 msg: 'Error inesperado'
-            })
+            });
         }
     }
 
