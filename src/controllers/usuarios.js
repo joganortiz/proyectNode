@@ -164,13 +164,81 @@ const usuarios = class Usuarios {
         }
     }
 
+    validPassword = async(req, res = response) => {
+        try {
+            const {id, password} = req.body;
+
+            const dataUser = await Usuario.findOne({ _id: id});
+
+            const validarPassword = bcryptjs.compareSync(password, dataUser.password);
+            if (!validarPassword) {
+                return res.json({
+                    ok: true,
+                });
+            }
+
+            return res.json({
+                ok: false,
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            });
+        }
+    }
+
+    updatePassword = async(req, res = response) => {
+        try {
+            const id = req.params.id;
+            const { password, newPassword } = req.body;
+           
+            const dataUser = await Usuario.findOne({ _id: id});
+
+            const validarPassword = bcryptjs.compareSync(password, dataUser.password);
+            if (!validarPassword) {
+                return res.json({
+                    ok: true,
+                    msg: 'La contraseña no coincide con la actual'
+                });
+            }
+
+            const validarPasswordActual = bcryptjs.compareSync(newPassword, dataUser.password);
+            if(validarPasswordActual){
+                return res.json({
+                    ok: true,
+                    msg: 'La nueva contraseña debe ser diferente a la actual'
+                });
+            }
+
+            //encriptar la contraseña
+            const salt = bcryptjs.genSaltSync();
+            const nuevaPassword = bcryptjs.hashSync( newPassword, salt);
+
+            await Usuario.findByIdAndUpdate(id, {password: nuevaPassword}, { new: true});
+            
+            return res.status(200).json({
+                ok: true,
+                msg: 'La contraseña se actualizo correctamente'
+            });
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Error inesperado'
+            });
+        }
+    }
+
     /**
      * @author Jogan Ortiz Muñoz
      * @description elimina un usuario de la base de datos
      * @date 2022-08-06
      * @returns json
      */
-    deleteUser = async(req, res) => {
+    deleteUser = async(req, res = response) => {
         const uid = req.params.id;
         try {
 

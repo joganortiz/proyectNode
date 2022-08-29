@@ -15,6 +15,12 @@ router.get('/:id', validar.validarJWT, Users.getUser);
 
 router.get('/existemail/:id/:email', Users.getExistEmail);
 
+router.post('/validPassword', [
+    validar.validarJWT,
+    check('id', 'El id debe ser válido').isMongoId(),
+    validar.validarCampos
+], Users.validPassword);
+
 router.post('/', [
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('password', 'La contraseña es obligatorio').not().isEmpty(),
@@ -22,13 +28,20 @@ router.post('/', [
     validar.validarCampos
 ], Users.setUser);
 
+
 router.put('/:id', [
     validar.validarJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('email', 'El correo es obligatorio').isEmail(),
     //check('role', 'El rol es obligatorio').not().isEmpty(),
     validar.validarCampos
-],Users.updateUser);
+], Users.updateUser);
+
+router.put('/updatePassword/:id', [
+    validar.validarJWT,
+    check('id', 'El id debe ser válido').isMongoId(),
+    validar.validarCampos
+], Users.updatePassword);
 
 router.delete('/:id', validar.validarJWT, Users.deleteUser);
 
